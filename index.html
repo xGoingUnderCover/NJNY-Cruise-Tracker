@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NY & Cape Liberty Cruise Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.14);
+      --text: #e8edf5;
+      --muted: #6b7a99;
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --caribbean: #10b981;
+      --bahamas: #3b82f6;
+      --bermuda: #f59e0b;
+      --europe: #a78bfa;
+      --canada: #34d399;
+      --other: #94a3b8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .header-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .header-text h1 {
+      font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--text), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header-text p { font-size: 0.75rem; color: var(--muted); font-weight: 300; margin-top: 1px; }
+    .header-badge {
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── MAIN ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.75rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--border2); }
+    .stat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'DM Mono', monospace; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; margin-top: 4px; letter-spacing: -0.03em; }
+    .stat-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── CONTROLS ── */
+    .controls-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    .control-group { display: flex; align-items: center; gap: 8px; }
+    .control-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; font-family: 'DM Mono', monospace; white-space: nowrap; }
+    select {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.8rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 6px 28px 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7a99'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color 0.2s;
+    }
+    select:hover { border-color: var(--accent); }
+    select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .search-wrap { margin-left: auto; position: relative; }
+    .search-wrap input {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.8rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 6px 10px 6px 32px;
+      border-radius: 8px;
+      width: 180px;
+      transition: border-color 0.2s, width 0.3s;
+    }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-wrap input:focus { outline: none; border-color: var(--accent); width: 220px; }
+    .search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 13px; pointer-events: none;
+    }
+
+    /* ── DEST PILLS ── */
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem; }
+    .pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.04em;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .pill:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+    .pill.active { color: #fff; border-color: transparent; }
+    .pill[data-dest="all"].active { background: rgba(255,255,255,0.12); color: var(--text); }
+    .pill[data-dest="Bahamas"].active { background: rgba(59,130,246,0.25); border-color: rgba(59,130,246,0.5); color: #93c5fd; }
+    .pill[data-dest="Bermuda"].active { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.5); color: #fcd34d; }
+    .pill[data-dest="Caribbean"].active { background: rgba(16,185,129,0.25); border-color: rgba(16,185,129,0.5); color: #6ee7b7; }
+    .pill[data-dest="Europe"].active { background: rgba(167,139,250,0.25); border-color: rgba(167,139,250,0.5); color: #c4b5fd; }
+    .pill[data-dest="Canada & NE"].active { background: rgba(52,211,153,0.2); border-color: rgba(52,211,153,0.4); color: #6ee7b7; }
+
+    /* ── COUNT BAR ── */
+    .count-bar { font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 0.75rem; }
+
+    /* ── TABLE ── */
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--surface2); }
+    th {
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+      font-weight: 500; text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    .date-cell { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text); white-space: nowrap; }
+    .date-day { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .ship-name { font-weight: 600; font-size: 0.85rem; }
+    .line-name { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+    .port-name { font-size: 0.8rem; }
+    .port-tag { font-size: 0.67rem; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
+    .itinerary-cell { font-size: 0.75rem; color: var(--muted); max-width: 200px; line-height: 1.5; }
+    .nights-cell { font-family: 'DM Mono', monospace; font-size: 0.78rem; text-align: center; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.03em;
+      padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-caribbean { background: rgba(16,185,129,0.15); color: #34d399; }
+    .badge-caribbean::before { background: #10b981; }
+    .badge-bahamas { background: rgba(59,130,246,0.15); color: #93c5fd; }
+    .badge-bahamas::before { background: #3b82f6; }
+    .badge-bermuda { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .badge-bermuda::before { background: #f59e0b; }
+    .badge-europe { background: rgba(167,139,250,0.15); color: #c4b5fd; }
+    .badge-europe::before { background: #a78bfa; }
+    .badge-canada { background: rgba(52,211,153,0.12); color: #6ee7b7; }
+    .badge-canada::before { background: #34d399; }
+    .badge-other { background: rgba(148,163,184,0.1); color: #94a3b8; }
+    .badge-other::before { background: #64748b; }
+
+    .empty-state {
+      text-align: center; padding: 3.5rem 1rem;
+      color: var(--muted); font-size: 0.9rem;
+    }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      border-top: 1px solid var(--border);
+      margin-top: 2.5rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      main { padding: 1.25rem 1rem; }
+      .controls-bar { flex-direction: column; align-items: stretch; }
+      .search-wrap { margin-left: 0; }
+      .search-wrap input { width: 100%; }
+      .search-wrap input:focus { width: 100%; }
+      th:nth-child(5), td:nth-child(5) { display: none; }
+      header { padding: 1rem; }
+      .header-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">⚓</div>
+  <div class="header-text">
+    <h1>NY & Cape Liberty Cruise Tracker</h1>
+    <p>Cape Liberty, NJ · Manhattan · Brooklyn — 2026 sailing schedule</p>
+  </div>
+  <span class="header-badge">2026 SEASON</span>
+</header>
+
+<main>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="controls-bar">
+    <div class="control-group">
+      <span class="control-label">Port</span>
+      <select id="portFilter">
+        <option value="all">All ports</option>
+        <option value="cape">Cape Liberty, NJ</option>
+        <option value="manhattan">Manhattan</option>
+        <option value="brooklyn">Brooklyn</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <span class="control-label">Month</span>
+      <select id="monthFilter">
+        <option value="all">All months</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <span class="control-label">Line</span>
+      <select id="lineFilter">
+        <option value="all">All lines</option>
+        <option value="Royal Caribbean">Royal Caribbean</option>
+        <option value="Celebrity Cruises">Celebrity Cruises</option>
+        <option value="Norwegian Cruise Line">Norwegian</option>
+        <option value="Cunard Line">Cunard Line</option>
+        <option value="MSC Cruises">MSC Cruises</option>
+      </select>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search ship, port, itinerary…" />
+    </div>
+  </div>
+
+  <div class="pill-row" id="destPills"></div>
+  <div class="count-bar" id="countBar"></div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Departure</th>
+          <th>Ship</th>
+          <th>Port</th>
+          <th>Destination</th>
+          <th>Ports of Call</th>
+          <th style="text-align:center">Nights</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  Data sourced from Royal Caribbean, Celebrity Cruises, Norwegian, Cunard & MSC schedules ·
+  Verify dates at <a href="https://www.nycruiseinfo.com" target="_blank">nycruiseinfo.com</a>
+  before booking · Last updated April 2026
+</footer>
+
+<script>
+const CRUISES = [
+  { date:"2026-04-22", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Labadee, Falmouth, Cozumel" },
+  { date:"2026-04-25", ship:"Norwegian Getaway",         line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-04-29", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:9,  dest:"Caribbean",    itinerary:"Nassau, Labadee, Falmouth, Cozumel" },
+  { date:"2026-05-02", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:5,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-05-03", ship:"Queen Mary 2",              line:"Cunard Line",            port:"manhattan", nights:7,  dest:"Europe",       itinerary:"Transatlantic → Southampton, England" },
+  { date:"2026-05-09", ship:"Norwegian Escape",          line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-05-10", ship:"Celebrity Silhouette",      line:"Celebrity Cruises",      port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Bermuda, St. Maarten, St. Kitts" },
+  { date:"2026-05-15", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-05-16", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:5,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-05-17", ship:"Celebrity Silhouette",      line:"Celebrity Cruises",      port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Bermuda, St. Maarten, St. Kitts" },
+  { date:"2026-05-17", ship:"MSC Meraviglia",            line:"MSC Cruises",            port:"brooklyn",  nights:7,  dest:"Caribbean",    itinerary:"Nassau, Ocean Cay MSC Marine Reserve" },
+  { date:"2026-05-21", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:5,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-05-22", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-05-24", ship:"Celebrity Silhouette",      line:"Celebrity Cruises",      port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Bermuda, St. Maarten, St. Kitts" },
+  { date:"2026-05-26", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:4,  dest:"Canada & NE",  itinerary:"Halifax, Saint John NB" },
+  { date:"2026-05-29", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-05-30", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:5,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-05-31", ship:"Celebrity Silhouette",      line:"Celebrity Cruises",      port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Bermuda, St. Maarten, St. Kitts" },
+  { date:"2026-06-01", ship:"Queen Mary 2",              line:"Cunard Line",            port:"manhattan", nights:7,  dest:"Europe",       itinerary:"Transatlantic → Southampton, England" },
+  { date:"2026-06-05", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:5,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-06-05", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-06-07", ship:"Celebrity Silhouette",      line:"Celebrity Cruises",      port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Bermuda, St. Maarten, St. Kitts" },
+  { date:"2026-06-12", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-06-14", ship:"Celebrity Silhouette",      line:"Celebrity Cruises",      port:"cape",      nights:7,  dest:"Caribbean",    itinerary:"Bermuda, San Juan, St. Thomas" },
+  { date:"2026-06-14", ship:"Norwegian Getaway",         line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-06-20", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:5,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-06-28", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-07-04", ship:"Norwegian Escape",          line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-07-05", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-07-12", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-07-12", ship:"MSC Meraviglia",            line:"MSC Cruises",            port:"brooklyn",  nights:7,  dest:"Bahamas",      itinerary:"Nassau, Ocean Cay MSC Marine Reserve" },
+  { date:"2026-07-19", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-07-26", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-08-02", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-08-09", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-08-09", ship:"Norwegian Getaway",         line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Bermuda",      itinerary:"King's Wharf, Bermuda (3 days)" },
+  { date:"2026-08-16", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-08-23", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-08-30", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-09-06", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-09-13", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-09-13", ship:"Norwegian Escape",          line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Canada & NE",  itinerary:"Halifax, Sydney NS, Bar Harbor, Boston" },
+  { date:"2026-09-20", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-09-27", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-10-04", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-10-04", ship:"Queen Mary 2",              line:"Cunard Line",            port:"manhattan", nights:7,  dest:"Europe",       itinerary:"Transatlantic → Southampton, England" },
+  { date:"2026-10-11", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-10-11", ship:"Norwegian Getaway",         line:"Norwegian Cruise Line",  port:"manhattan", nights:7,  dest:"Canada & NE",  itinerary:"Halifax, Saint John, Quebec City" },
+  { date:"2026-10-18", ship:"Oasis of the Seas",         line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-10-29", ship:"Independence of the Seas",  line:"Royal Caribbean",        port:"cape",      nights:10, dest:"Caribbean",    itinerary:"Cabo Rojo, Aruba, Bonaire, Labadee → Miami" },
+  { date:"2026-11-08", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-11-15", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-11-22", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-12-06", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-12-13", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-12-20", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+  { date:"2026-12-27", ship:"Odyssey of the Seas",       line:"Royal Caribbean",        port:"cape",      nights:7,  dest:"Bahamas",      itinerary:"Port Canaveral, CocoCay, Nassau" },
+];
+
+const PORT_LABELS = { cape: "Cape Liberty, NJ", manhattan: "Manhattan", brooklyn: "Brooklyn" };
+const PORT_TAGS   = { cape: "BAYONNE · NJ", manhattan: "MANHATTAN · NY", brooklyn: "BROOKLYN · NY" };
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DESTS  = ["Bahamas","Bermuda","Caribbean","Europe","Canada & NE"];
+const BADGE_MAP = { Caribbean:"caribbean", Bahamas:"bahamas", Bermuda:"bermuda", Europe:"europe", "Canada & NE":"canada" };
+
+let activeDest = "all";
+
+function fmtDate(d) {
+  const dt = new Date(d + 'T12:00:00');
+  return `${MONTHS[dt.getMonth()]} ${dt.getDate()}, ${dt.getFullYear()}`;
+}
+function fmtDay(d) {
+  const dt = new Date(d + 'T12:00:00');
+  return DAYS[dt.getDay()];
+}
+
+function buildStats(data) {
+  const totalSailings = data.length;
+  const ships = new Set(data.map(c => c.ship)).size;
+  const lines  = new Set(data.map(c => c.line)).size;
+  const avgNights = data.length ? Math.round(data.reduce((s,c)=>s+c.nights,0)/data.length) : 0;
+
+  const statsRow = document.getElementById('statsRow');
+  statsRow.innerHTML = [
+    { label: 'Sailings', value: totalSailings, sub: 'matching filters' },
+    { label: 'Ships',    value: ships,         sub: 'unique vessels' },
+    { label: 'Lines',    value: lines,         sub: 'cruise lines' },
+    { label: 'Avg nights', value: avgNights + 'n', sub: 'per sailing' },
+  ].map(s => `
+    <div class="stat-card">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>`).join('');
+}
+
+function buildPills() {
+  const row = document.getElementById('destPills');
+  const all = ["all", ...DESTS];
+  row.innerHTML = all.map(d => `<button class="pill${activeDest===d?' active':''}" data-dest="${d}">${d==='all'?'All destinations':d}</button>`).join('');
+  row.querySelectorAll('.pill').forEach(btn => {
+    btn.addEventListener('click', () => { activeDest = btn.dataset.dest; buildPills(); render(); });
+  });
+}
+
+function getFiltered() {
+  const port  = document.getElementById('portFilter').value;
+  const month = document.getElementById('monthFilter').value;
+  const line  = document.getElementById('lineFilter').value;
+  const q     = document.getElementById('searchInput').value.toLowerCase().trim();
+  return CRUISES.filter(c => {
+    const m = parseInt(c.date.split('-')[1]);
+    if (port !== 'all' && c.port !== port) return false;
+    if (month !== 'all' && m !== parseInt(month)) return false;
+    if (line !== 'all' && c.line !== line) return false;
+    if (activeDest !== 'all' && c.dest !== activeDest) return false;
+    if (q && !`${c.ship} ${c.line} ${c.itinerary} ${PORT_LABELS[c.port]}`.toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a,b) => a.date.localeCompare(b.date));
+}
+
+function render() {
+  const data = getFiltered();
+  buildStats(data);
+  document.getElementById('countBar').textContent = data.length
+    ? `${data.length} sailing${data.length!==1?'s':''} found`
+    : '';
+
+  const body = document.getElementById('tableBody');
+  if (!data.length) {
+    body.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">⚓</div>No sailings match your filters.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = data.map(c => {
+    const bc = BADGE_MAP[c.dest] || 'other';
+    return `<tr>
+      <td>
+        <div class="date-cell">${fmtDate(c.date)}</div>
+        <div class="date-day">${fmtDay(c.date)}</div>
+      </td>
+      <td>
+        <div class="ship-name">${c.ship}</div>
+        <div class="line-name">${c.line}</div>
+      </td>
+      <td>
+        <div class="port-name">${PORT_LABELS[c.port]}</div>
+        <div class="port-tag">${PORT_TAGS[c.port]}</div>
+      </td>
+      <td><span class="badge badge-${bc}">${c.dest}</span></td>
+      <td class="itinerary-cell">${c.itinerary}</td>
+      <td class="nights-cell">${c.nights}</td>
+    </tr>`;
+  }).join('');
+}
+
+['portFilter','monthFilter','lineFilter'].forEach(id =>
+  document.getElementById(id).addEventListener('change', render));
+document.getElementById('searchInput').addEventListener('input', render);
+
+buildPills();
+render();
+</script>
+</body>
+</html>
